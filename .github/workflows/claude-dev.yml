@@ -90,6 +90,7 @@ jobs:
             2. `ruff format .` 후 `ruff check .` 와 `pytest -q` 가 모두 통과하는지 확인합니다.
             3. git 커밋·푸시·PR 생성은 하지 마세요. 워크플로가 처리합니다.
             4. 마지막으로 저장소 루트에 `.claude-pr-body.md` 를 작성하세요 (요약 / 변경 파일 / 수용 기준별 확인 결과 / 가정).
+               `Closes #N` 같은 이슈 연결 문구는 쓰지 마세요. 워크플로가 붙입니다.
           claude_args: |
             --max-turns 40
             --allowedTools "Read,Edit,Write,Glob,Grep,Bash(pytest:*),Bash(ruff:*),Bash(pip install:*)"
@@ -117,6 +118,8 @@ jobs:
 
           BODY_FILE="$RUNNER_TEMP/pr-body.md"
           if [ -f .claude-pr-body.md ]; then mv .claude-pr-body.md "$BODY_FILE"; else : > "$BODY_FILE"; fi
+          # Claude가 넣은 이슈 연결 문구는 지우고, 아래에서 한 번만 붙인다
+          sed -i -E '/^[[:space:]]*(close[sd]?|fix(e[sd])?|resolve[sd]?)[[:space:]]+#[0-9]+[[:space:]]*$/Id' "$BODY_FILE"
 
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
