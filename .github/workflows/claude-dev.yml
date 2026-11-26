@@ -6,7 +6,6 @@
 #     (n8n이 이 문구로 시트 상태를 갱신).
 #
 # 필요한 설정
-#   - Claude GitHub App 설치 (https://github.com/apps/claude)
 #   - Secret CLAUDE_CODE_OAUTH_TOKEN (`claude setup-token` 결과)
 #   - Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests" 체크
 #     (또는 Secret CLAUDE_PR_TOKEN 에 PAT 등록)
@@ -72,6 +71,8 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Claude는 커밋·댓글을 하지 않으므로 Claude GitHub App 없이 기본 토큰으로 충분
+          github_token: ${{ github.token }}
           prompt: |
             저장소 ${{ github.repository }} 의 이슈 #${{ github.event.issue.number }} 를 구현하세요.
             CLAUDE.md 의 규칙을 따르세요.
